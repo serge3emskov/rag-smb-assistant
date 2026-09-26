@@ -1,0 +1,61 @@
+# Каталог сущностей демо-корпуса.
+# id — стабильный ключ (используется в golden dataset), type — группа «соседей»:
+# при вопросе про тариф чанки про ДРУГИЕ тарифы штрафуются.
+# aliases — как клиенты реально пишут: сокращения, без кавычек, разговорные формы.
+# Опечатки ловит fuzzy-сопоставление (fuzzy_threshold в конфиге).
+
+entities:
+  - id: tariff_first_step
+    type: tariff
+    name: Первый шаг
+    aliases: [первый шаг, стартовый пакет, стартовый тариф]
+
+  - id: tariff_rhythm
+    type: tariff
+    name: Деловой ритм
+    aliases: [деловой ритм, тариф ритм]
+
+  - id: tariff_max
+    type: tariff
+    name: Бизнес-Макс
+    aliases: [бизнес макс, тариф бизнес-макс, максимальный тариф]
+
+  - id: acq_pos
+    type: acquiring
+    name: Торговый эквайринг
+    aliases: [pos-терминал, терминал для оплаты картами, оплата картами в магазине]
+
+  - id: acq_internet
+    type: acquiring
+    name: Интернет-эквайринг
+    aliases: [интернет эквайринг, оплата на сайте, онлайн-оплата]
+
+  - id: acq_sbp
+    type: acquiring
+    name: Оплата по QR-коду через СБП
+    aliases: [qr-код, qr код, сбп, система быстрых платежей, qr-эквайринг]
+
+  - id: credit_oborot
+    type: credit
+    name: Бизнес-Оборот
+    aliases: [бизнес оборот, кредит на оборотные средства, оборотный кредит]
+
+  - id: credit_express
+    type: credit
+    name: Кредит Экспресс
+    aliases: [экспресс-кредит, экспресс кредит, кредит без залога, кредита экспресс]
+
+  - id: credit_overdraft
+    type: credit
+    name: Овердрафт
+    aliases: [овердрафт]
+
+  - id: salary_project
+    type: service
+    name: Зарплатный проект
+    aliases: [зарплатный проект, зарплатные карты]
+
+  - id: online_accounting
+    type: service
+    name: Онлайн-бухгалтерия
+    aliases: [онлайн бухгалтерия, бухгалтерия, бухгалтерский сервис]

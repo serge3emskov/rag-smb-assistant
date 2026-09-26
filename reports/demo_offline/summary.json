@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "retriever": "hybrid(bm25+tfidf)+entities",
+    "generator": "extractive-baseline",
+    "k": 4,
+    "chunks": 32
+  },
+  "summary": {
+    "n_questions": 42,
+    "n_answerable": 36,
+    "n_unanswerable": 6,
+    "accuracy": 0.7143,
+    "answerable_accuracy": 0.8056,
+    "fact_recall": 0.8194,
+    "hit@k": 1.0,
+    "mrr": 0.9444,
+    "evidence_recall": 1.0,
+    "hallucination_rate": 0.0,
+    "false_refusal_rate": 0.0,
+    "refusal_accuracy_unanswerable": 0.1667,
+    "latency_p50_s": 0.001,
+    "errors": {
+      "ok": 29,
+      "incomplete_answer": 7,
+      "answered_unanswerable": 5,
+      "correct_refusal": 1
+    }
+  },
+  "ablation": [
+    {
+      "config": "bm25",
+      "hit@1": 0.8333,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "recall@4": 1.0,
+      "mrr": 0.8981
+    },
+    {
+      "config": "tfidf",
+      "hit@1": 0.8611,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "recall@4": 1.0,
+      "mrr": 0.9259
+    },
+    {
+      "config": "hybrid",
+      "hit@1": 0.8611,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "recall@4": 1.0,
+      "mrr": 0.9213
+    },
+    {
+      "config": "hybrid+entities",
+      "hit@1": 0.8889,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "recall@4": 1.0,
+      "mrr": 0.9444,
+      "entity_acc": 1.0
+    }
+  ]
+}

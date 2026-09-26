@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.ipynb_checkpoints/
+.env
+
+# Сохранённые страницы сторонних сайтов не публикуются
+data/sber/docs/*
+!data/sber/docs/.gitkeep
+
+# Отчёты по реальному корпусу содержат цитаты документов
+reports/*
+!reports/demo_offline/

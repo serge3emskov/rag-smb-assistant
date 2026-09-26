@@ -1,0 +1,29 @@
+# Офлайн-конфигурация: работает без GPU и интернета (BM25 + TF-IDF, экстрактивный baseline).
+# В Colab используется configs/colab.yaml с эмбеддингами и Qwen.
+docs_dir: data/demo/docs
+
+chunking:
+  max_chars: 700
+  overlap_sents: 1
+
+retrieval:
+  retriever: hybrid          # bm25 | tfidf | dense | hybrid
+  hybrid: [bm25, tfidf]
+  rrf_k: 60
+  k: 4
+  reranker:
+    enabled: false
+
+entities:
+  enabled: true
+  catalog: data/demo/entities.yaml
+  fuzzy_threshold: 85
+  boost: 1.0                 # множитель для чанков с нужной сущностью: score * (1 + boost)
+  penalty: 0.5               # для чанков про «соседнюю» сущность того же типа
+
+generation:
+  backend: extractive        # extractive | hf | openai
+
+evaluation:
+  llm_judge: false
+  ablation: [bm25, tfidf, hybrid, hybrid+entities]

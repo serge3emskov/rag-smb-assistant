@@ -1,0 +1,39 @@
+# Colab (GPU T4) или локальная машина с GPU: dense-эмбеддинги + BM25 + реранкер + Qwen.
+docs_dir: data/demo/docs     # для документации Сбера: data/sber/docs
+
+chunking:
+  max_chars: 700
+  overlap_sents: 1
+
+retrieval:
+  retriever: hybrid
+  hybrid: [bm25, dense]
+  rrf_k: 60
+  k: 4
+  dense:
+    model: intfloat/multilingual-e5-base     # альтернатива: BAAI/bge-m3 (точнее, тяжелее)
+  reranker:
+    enabled: true
+    model: BAAI/bge-reranker-v2-m3
+    pool: 20
+
+entities:
+  enabled: true
+  catalog: data/demo/entities.yaml           # для Сбера: data/sber/entities.yaml
+  fuzzy_threshold: 85
+  boost: 1.0
+  penalty: 0.5
+
+generation:
+  backend: hf                                # hf — transformers; openai — Ollama/vLLM
+  model: Qwen/Qwen3-4B-Instruct-2507         # на T4 в fp16 ≈ 8 ГБ; Qwen3-8B → load_in_4bit: true
+  load_in_4bit: false
+  max_new_tokens: 300
+  # backend: openai
+  # model: qwen3:4b
+  # base_url: http://localhost:11434/v1
+  # api_key: ollama
+
+evaluation:
+  llm_judge: true                            # Qwen проверяет утверждения ответа по контексту
+  ablation: [bm25, dense, hybrid, hybrid+entities, hybrid+rerank+entities]

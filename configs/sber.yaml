@@ -1,0 +1,34 @@
+# Документация СберБизнеса (страницы сохраняются вручную, см. data/sber/README.md).
+docs_dir: data/sber/docs
+
+chunking:
+  max_chars: 700
+  overlap_sents: 1
+
+retrieval:
+  retriever: hybrid
+  hybrid: [bm25, tfidf]          # в Colab: [bm25, dense]
+  rrf_k: 60
+  k: 4
+  dense:
+    model: intfloat/multilingual-e5-base
+  reranker:
+    enabled: false               # в Colab: true
+    model: BAAI/bge-reranker-v2-m3
+    pool: 20
+
+entities:
+  enabled: true
+  catalog: data/sber/entities.yaml
+  fuzzy_threshold: 85
+  boost: 1.0
+  penalty: 0.5
+
+generation:
+  backend: extractive            # в Colab: hf + Qwen/Qwen3-4B-Instruct-2507; локально: openai + Ollama qwen3:4b
+  model: Qwen/Qwen3-4B-Instruct-2507
+  max_new_tokens: 300
+
+evaluation:
+  llm_judge: false
+  ablation: [bm25, tfidf, hybrid, hybrid+entities]

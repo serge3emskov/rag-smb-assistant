@@ -1,0 +1,7 @@
+// Шаблон golden dataset для документации СберБизнеса. Строки с // игнорируются.
+// Скопируйте в eval/golden_sber.jsonl и замените плейсхолдеры фактами из сохранённых страниц.
+// doc_id = имя файла без расширения в data/sber/docs/.
+// {"id": "s001", "question": "Сколько стоит обслуживание счёта на пакете <НАЗВАНИЕ>?", "category": "РКО", "difficulty": "single", "expected_docs": ["rko_tariffs"], "evidence": ["<подстрока из раздела пакета>"], "expected_facts": ["<сумма>|<вариант записи>"], "expected_entities": ["package_xxx"]}
+// {"id": "s002", "question": "Сколько стоит принимать оплату на сайте?", "category": "эквайринг", "difficulty": "paraphrase", "expected_docs": ["acquiring_internet"], "evidence": ["<ставка из документа>"], "expected_facts": ["<ставка>"], "expected_entities": ["acq_internet"]}
+// {"id": "s003", "question": "Какие документы нужны ООО для открытия счёта?", "category": "открытие счёта", "difficulty": "multi_hop", "expected_docs": ["rko"], "evidence": ["<документ 1>", "<документ 2>"], "expected_facts": ["<документ 1>", "<документ 2>"], "expected_entities": []}
+// {"id": "s004", "question": "Какая ставка по ипотеке для ИП?", "answerable": false, "category": "без ответа", "difficulty": "unanswerable", "expected_docs": [], "evidence": [], "expected_facts": [], "expected_entities": []}
