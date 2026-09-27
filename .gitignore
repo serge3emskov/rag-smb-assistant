@@ -12,3 +12,4 @@ data/sber/docs/*
 # Отчёты по реальному корпусу содержат цитаты документов
 reports/*
 !reports/demo_offline/
+*.zip
