@@ -135,3 +135,22 @@ def test_end_to_end_baseline_quality():
     assert s["hit@k"] >= 0.95
     assert s["mrr"] >= 0.9
     assert s["hallucination_rate"] <= 0.05
+
+
+# ------------------------------------------------------------------ synth
+def test_synth_keeps_only_verbatim_quotes(chunks):
+    import json
+    from smbrag.synth import generate_golden_draft
+
+    class Stub:
+        def __init__(self): self.i = 0
+        def chat(self, messages, max_new_tokens=None):
+            self.i += 1
+            frag = messages[-1]["content"].split("):\n", 1)[1]
+            line = next(l for l in frag.splitlines() if any(ch.isdigit() for ch in l))
+            quote = line[:50] if self.i % 2 else "выдуманная цитата 999"   # каждая вторая — не из текста
+            return json.dumps({"question": "q", "answer": "a", "quote": quote, "fact": ""}, ensure_ascii=False)
+
+    rows, stats = generate_golden_draft(chunks, Stub(), n=10, progress=False)
+    assert stats["quote_not_verbatim"] >= 4 and len(rows) == stats["accepted"]
+    assert validate_golden([GoldItem(**r) for r in rows], chunks) == []
