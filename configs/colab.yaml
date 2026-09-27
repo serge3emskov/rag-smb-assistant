@@ -26,8 +26,8 @@ entities:
 
 generation:
   backend: hf                                # hf — transformers; openai — Ollama/vLLM
-  model: Qwen/Qwen3-4B-Instruct-2507         # на T4 в fp16 ≈ 8 ГБ; Qwen3-8B → load_in_4bit: true
-  load_in_4bit: false
+  model: Qwen/Qwen3-4B-Instruct-2507
+  load_in_4bit: true                         # T4 (15 ГБ): 4-bit ≈ 2.5 ГБ; fp16 ≈ 8 ГБ и вместе с e5 + реранкером не помещается
   max_new_tokens: 300
   # backend: openai
   # model: qwen3:4b

@@ -41,6 +41,10 @@ class QwenHF:
             kw["torch_dtype"] = torch.float16 if torch.cuda.is_available() else torch.float32
         self.model = AutoModelForCausalLM.from_pretrained(model_name, **kw)
         self.model.eval()
+        offloaded = {d for d in getattr(self.model, "hf_device_map", {}).values() if d in ("cpu", "disk")}
+        if offloaded:
+            print(f"⚠ Часть весов {self.name} выгружена на {offloaded}: GPU не хватает памяти. "
+                  "Включите load_in_4bit: true или перезапустите сеанс.")
         self.max_new_tokens = max_new_tokens
 
     def chat(self, messages: list[dict], max_new_tokens: int | None = None) -> str:
