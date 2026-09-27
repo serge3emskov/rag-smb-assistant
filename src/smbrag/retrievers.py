@@ -25,6 +25,26 @@ class Retriever(Protocol):
     def search(self, query: str, k: int = 5) -> list[Hit]: ...
 
 
+# Модели и эмбеддинги кэшируются на уровне процесса: при сравнении конфигураций
+# ретривер пересоздаётся много раз, а на GPU рядом уже лежит LLM.
+_MODELS: dict[tuple, object] = {}
+_EMB: dict[tuple, np.ndarray] = {}
+
+
+def _load(kind: str, name: str, device: str | None):
+    key = (kind, name, device)
+    if key not in _MODELS:
+        import sentence_transformers as st
+        _MODELS[key] = (st.SentenceTransformer(name, device=device) if kind == "bi"
+                        else st.CrossEncoder(name, device=device, max_length=512))
+    return _MODELS[key]
+
+
+def clear_model_cache() -> None:
+    _MODELS.clear()
+    _EMB.clear()
+
+
 def _top(chunks: list[Chunk], scores: np.ndarray, k: int) -> list[Hit]:
     idx = np.argsort(-scores)[:k]
     return [Hit(chunks[i], float(scores[i]), r) for r, i in enumerate(idx, 1)]
@@ -73,14 +93,15 @@ class DenseRetriever:
 
     def __init__(self, chunks: list[Chunk], model_name: str = "intfloat/multilingual-e5-base",
                  batch_size: int = 32, device: str | None = None):
-        from sentence_transformers import SentenceTransformer
-
         self.chunks = chunks
-        self.model = SentenceTransformer(model_name, device=device)
+        self.model = _load("bi", model_name, device)
         self.is_e5 = "e5" in model_name.lower()
-        passages = [("passage: " if self.is_e5 else "") + c.indexed_text for c in chunks]
-        self.emb = self.model.encode(passages, batch_size=batch_size, normalize_embeddings=True,
-                                     show_progress_bar=len(passages) > 200)
+        key = (model_name, tuple(c.chunk_id for c in chunks), hash(tuple(c.indexed_text for c in chunks)))
+        if key not in _EMB:
+            passages = [("passage: " if self.is_e5 else "") + c.indexed_text for c in chunks]
+            _EMB[key] = self.model.encode(passages, batch_size=batch_size, normalize_embeddings=True,
+                                          show_progress_bar=len(passages) > 200)
+        self.emb = _EMB[key]
 
     def scores(self, query: str) -> np.ndarray:
         q = self.model.encode([("query: " if self.is_e5 else "") + query], normalize_embeddings=True)
@@ -115,10 +136,8 @@ class Reranker:
     """Cross-encoder поверх кандидатов ретривера (например, BAAI/bge-reranker-v2-m3)."""
 
     def __init__(self, base, model_name: str = "BAAI/bge-reranker-v2-m3", pool: int = 20, device: str | None = None):
-        from sentence_transformers import CrossEncoder
-
         self.base = base
-        self.model = CrossEncoder(model_name, device=device, max_length=512)
+        self.model = _load("cross", model_name, device)
         self.pool = pool
         self.name = f"{base.name}+rerank"
         self.chunks = base.chunks
